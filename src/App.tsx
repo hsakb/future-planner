@@ -7,8 +7,13 @@ import {
   FormLabel,
   FormControl,
   FormControlLabel,
+  Box,
 } from '@mui/material';
 import { Area, Bar, CartesianGrid, ComposedChart, Legend, Line, Tooltip, XAxis, YAxis } from 'recharts';
+import internal from 'stream';
+import { ChangeEvent, useState } from 'react';
+import { setConstantValue } from 'typescript';
+import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 
 const gender = [
   {
@@ -40,104 +45,152 @@ const retirement_age = [
   }
 ]
 
-const data = [
-  {
-    "name": "0歳",
-    "収入": 4000,
-    "支出": 2400,
-    "貯蓄": 2400
-  },
-  {
-    "name": "10歳",
-    "収入": 3000,
-    "支出": 1398,
-    "貯蓄": 2210
-  },
-  {
-    "name": "20歳",
-    "収入": 2000,
-    "支出": 9800,
-    "貯蓄": 2290
-  },
-  {
-    "name": "30歳",
-    "収入": 2780,
-    "支出": 3908,
-    "貯蓄": 2000
-  },
-  {
-    "name": "40歳",
-    "収入": 1890,
-    "支出": 4800,
-    "貯蓄": 2181
-  },
-  {
-    "name": "50歳",
-    "収入": 2390,
-    "支出": 3800,
-    "貯蓄": 2500
-  },
-  {
-    "name": "60歳",
-    "収入": 3490,
-    "支出": 4300,
-    "貯蓄": 2100
-  },
-  {
-    "name": "70歳",
-    "収入": 3490,
-    "支出": 4300,
-    "貯蓄": 2100
-  },
-  {
-    "name": "80歳",
-    "収入": 3490,
-    "支出": 4300,
-    "貯蓄": 2100
-  },
-  {
-    "name": "90歳",
-    "収入": 3490,
-    "支出": 4300,
-    "貯蓄": 2100
-  },
-  {
-    "name": "100歳",
-    "収入": 3490,
-    "支出": 4300,
-    "貯蓄": 2100
-  },
-  {
-    "name": "100歳",
-    "収入": 3490,
-    "支出": 4300,
-    "貯蓄": 2100
-  }
-]
+interface ChartData {
+  age: number,
+  annual_income: number,
+  spending: number,
+  savings: number
+}
+  
+const App = () => {
 
-function App() {
+  const generateChartData = () => {
+    const result: Array<ChartData> = []
+    let savings = 0
+    let spending = 4000000
+    let annual_income = chartDataProps.salary * (1 + 0.05)
+    for (let i = chartDataProps.age; i <= 100; i++) {
+      // 年齢を2ずつ加算
+      const age = i;
+      // 年収を3%ずつ上昇させる
+      annual_income = annual_income * (1 + 0.05)
+      // 年間の支出額を2%ずつ増加
+      spending = spending * (1 + 0.05);
+      // 貯蓄額 = 前回の貯蓄額 + （手取り額 - 支出額）
+      savings += annual_income - spending;
+      // 生成した情報を配列に格納
+      result.push({ age, annual_income, spending, savings });
+    }
+    return result;
+  }
+
+  const [chartProps, setChartProps] = useState({
+    width: 800,
+    height: 500,
+    interval: 1,
+    angle: 0,
+  })
+  const [chartDataProps, setChartDataProps] = useState({
+    age: 20,
+    gender: "man",
+    job: "会社員",
+    salary: 4000000,
+    retirementAge: 65,
+    savings: 1000000,
+  })
+  const [chartData, setChartData] = useState(generateChartData)
+  
+  const handleChartPropsChange = (e : ChangeEvent<HTMLInputElement>) => {
+    setChartProps({
+      ...chartProps,
+      [e.target.name]: isNaN(parseInt(e.target.value, 10)) 
+        ? e.target.value: parseInt(e.target.value, 10)
+    })
+  }
+  const handleChartDataPropsChange = (e : ChangeEvent<HTMLInputElement>) => {
+    setChartDataProps({
+      ...chartDataProps,
+      [e.target.name]: isNaN(parseInt(e.target.value, 10)) 
+        ? e.target.value: parseInt(e.target.value, 10)
+    })
+    setChartData(generateChartData)
+  }
+
+  const columns: GridColDef[] = [
+    { field: 'age', headerName: '年齢', width: 90, type: 'number'},
+    {
+      field: 'annual_income',
+      headerName: '手取り',
+      type: 'number',
+      width: 150,
+      editable: true,
+    },
+    {
+      field: 'spending',
+      headerName: '支出',
+      type: 'number',
+      width: 150,
+      editable: true,
+    },
+    {
+      field: 'savings',
+      headerName: '貯蓄',
+      type: 'number',
+      width: 110,
+      editable: true,
+    }
+  ];
+  
+  const rows = [
+    { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
+    { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
+    { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
+    { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
+    { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
+    { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
+    { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
+    { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
+    { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
+  ];
+
   return (
     <div>
+      <TextField label="interval" name="interval" type="number" onChange={handleChartPropsChange} />
+      <TextField label="angle" name="angle" type="number" onChange={handleChartPropsChange}/>
+      <ComposedChart width={chartProps.width} height={chartProps.height} data={chartData}>
+        <XAxis dataKey="age" interval={chartProps.interval} angle={chartProps.angle} />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        <CartesianGrid stroke="#f5f5f5" />
+        <Area type="monotone" dataKey="savings" fill="#8884d8" stroke="#8884d8" />
+        <Bar dataKey="spending" barSize={20} fill="#413ea0" />
+        <Line type="monotone" dataKey="annual_income" stroke="#ff7300" />
+      </ComposedChart>
+      <Box sx={{ height: 400, width: '100%' }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pageSize={5}
+          rowsPerPageOptions={[5]}
+          checkboxSelection
+          disableSelectionOnClick
+          experimentalFeatures={{ newEditingApi: true }}
+        />
+      </Box>
       <form noValidate autoComplete="off">
         <div>
           <p>入力者</p>
           <div>
-            <TextField label="年齢" type="number" />
+            <TextField label="年齢" type="number" name="age" onChange={handleChartDataPropsChange}/>
           </div>
           <div>
-            <TextField select label="性別" defaultValue="男" variant="filled">
-              {gender.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
+            <TextField label="手取り1" type="number" name="annual_income_1" />
           </div>
           <div>
-            <TextField label="職業" />
+            <TextField label="手取り1はあと何年" type="number" name="annual_income_1_term" onChange={handleChartDataPropsChange}/>
           </div>
           <div>
-            <TextField label="手取り" type="number" />
+            <TextField label="手取り2" type="number" name="annual_income_2" />
+          </div>
+          <div>
+            <TextField label="手取り2はあと何年" type="number" name="annual_inome_2_term" onChange={handleChartDataPropsChange}/>
+          </div>
+          <div>
+            <TextField label="手取り3" type="number" name="annual_income_3" />
+          </div>
+          <div>
+            <TextField label="手取り3はあと何年" type="number" name="annual_income_3_term" onChange={handleChartDataPropsChange}/>
           </div>
           <div>
             <TextField select label="定年" defaultValue="60" variant="filled">
@@ -245,26 +298,8 @@ function App() {
           <li>趣味</li>
         </ul>
       </form>
-      <ComposedChart width={730} height={250} data={data}>
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <CartesianGrid stroke="#f5f5f5" />
-        <Area type="monotone" dataKey="貯蓄" fill="#8884d8" stroke="#8884d8" />
-        <Bar dataKey="支出" barSize={20} fill="#413ea0" />
-        <Line type="monotone" dataKey="収入" stroke="#ff7300" />
-      </ComposedChart>
     </div>
   );
 }
 
 export default App;
-
-// グラフを描画するライブラリの中では、ReactとMaterial UIとの相性が良いものとして以下があります:
-
-// Recharts
-// Victory
-// Chart.js
-// Nivo
-// 一番お勧めのライブラリはRechartsです。ReactとMaterial UIとの統合が簡単で、棒グラフや折れ線グラフをはじめとする多様なグラフの種類をサポートしています。また、文書も充実しているため使い方も容易です。
