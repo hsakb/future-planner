@@ -78,50 +78,10 @@ export const generateDataBySettings = (settings: Settings): GridValidRowModel[] 
 }
 
 export const App = () => {
+
   /**
-     * データ表示設定
-     */
-  const [settings, setSettings] = useState<Settings>({
-    age: 0,
-    annual_income: 0,
-    annual_expenditure: 0,
-    savings: 0
-  })
-  /**
-   * 設定をグリッドとグラフに適用する
+   * グリッドの列定義
    */
-  const handleApplySettings = () => {
-    setData(generateDataBySettings(settings))
-  }
-  const [chartProps, setChartProps] = useState({
-    width: 800,
-    height: 500,
-    interval: 1,
-    angle: 0,
-  })
-  const handleChartPropsChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setChartProps({
-      ...chartProps,
-      [e.target.name]: isNaN(parseInt(e.target.value, 10))
-        ? e.target.value : parseInt(e.target.value, 10)
-    })
-  }
-
-  const handleSettingsChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSettings({
-      ...settings,
-      [e.target.name]: isNaN(parseInt(e.target.value, 10))
-        ? e.target.value : parseInt(e.target.value, 10)
-    })
-  }
-  // const handleChartDataPropsChange = (e : ChangeEvent<HTMLInputElement>) => {
-  //   setChartDataProps({
-  //     ...chartDataProps,
-  //     [e.target.name]: isNaN(parseInt(e.target.value, 10)) 
-  //       ? e.target.value: parseInt(e.target.value, 10)
-  //   })
-  // }
-
   const columns: GridColDef[] = [
     {
       field: 'id',
@@ -153,14 +113,73 @@ export const App = () => {
     }
   ];
 
-  const processRowUpdate = (newRow: GridRowModel, oldRow: GridRowModel) => {
-    const index = data.indexOf(oldRow)
+  /**
+     * データ表示設定
+     */
+  const [settings, setSettings] = useState<Settings>({
+    age: 0,
+    annual_income: 0,
+    annual_expenditure: 0,
+    savings: 0
+  })
+
+  /**
+   * データ表示設定変更後にその値を保存する
+   * @param e 
+   */
+  const handleSettingsChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSettings({
+      ...settings,
+      [e.target.name]: isNaN(parseInt(e.target.value, 10))
+        ? e.target.value : parseInt(e.target.value, 10)
+    })
+  }
+
+  /**
+   * 反映ボタン押下時に設定をグリッドとグラフに適用する
+   */
+  const handleApplySettings = () => {
+    setData(generateDataBySettings(settings))
+  }
+
+  /**
+   * グラフのプロパティ
+   */
+  const [chartProps, setChartProps] = useState({
+    width: 800,
+    height: 500,
+    interval: 1,
+    angle: 0,
+  })
+
+  /**
+   * グラフのプロパティ変更後にグラフに反映する
+   * @param e 
+   */
+  const handleChartPropsChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setChartProps({
+      ...chartProps,
+      [e.target.name]: isNaN(parseInt(e.target.value, 10))
+        ? e.target.value : parseInt(e.target.value, 10)
+    })
+  }
+
+  /**
+   * グリッドの行変更後にバインドしているデータを変更
+   * @param newRow 
+   * @returns 
+   */
+  const processRowUpdate = (newRow: GridRowModel) => {
+    const index = data.indexOf(newRow)
     const newData = [...data]
     newData[index] = newRow
     setData(newData)
     return newRow
   }
 
+  /**
+   * グリッドとグラフがバインドする変数
+   */
   const [data, setData] = useState<GridValidRowModel[]>([])
 
   return (
