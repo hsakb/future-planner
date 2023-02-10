@@ -14,36 +14,6 @@ import { Area, Bar, CartesianGrid, ComposedChart, Legend, Line, Tooltip, XAxis, 
 import { ChangeEvent, useState } from 'react';
 import { DataGrid, GridColDef, GridRowModel, GridValidRowModel, MuiEvent } from '@mui/x-data-grid';
 
-export const generateGridData = (
-  age: number,
-  annual_income: number,
-  savings: number
-): GridValidRowModel[] => {
-  const result: GridValidRowModel[] = []
-  let id = age
-  let calc_annual_income = annual_income
-  let calc_spending = 2000000
-  let calc_savings = savings
-  result.push({
-    id: id,
-    annual_income: calc_annual_income,
-    spending: calc_spending,
-    savings: calc_savings + calc_annual_income - calc_spending
-  })
-  for (let i = age + 1; i <= 100; i++) {
-    id = i
-    calc_annual_income = calc_annual_income * (1 + 0.05)
-    calc_spending = calc_spending * (1 + 0.05)
-    calc_savings += calc_annual_income - calc_spending
-    result.push({
-      id: id,
-      annual_income: calc_annual_income,
-      spending: calc_spending,
-      savings: calc_savings
-    })
-  }
-  return result
-}
 
 /**
  * データ生成の設定
