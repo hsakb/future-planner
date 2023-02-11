@@ -24,7 +24,7 @@ interface Settings {
   annual_expenditure: number,
   savings: number
 }
-  
+
 
 /**
  * 設定からデータを生成する
@@ -49,13 +49,24 @@ export const generateDataBySettings = (settings: Settings): GridValidRowModel[] 
 
 export const App = () => {
 
+//   収入（income）
+// 支出（expenditures）
+// 貯蓄（savings）
+// 資産（assets）
+// 負債（liabilities）
+// ネットワース（net worth）
+// 投資収益（investment returns）
+// 税金（taxes）
+// 社会保障（Social Security）
+// ペンション（pension）
+
   /**
    * グリッドの列定義
    */
-  const columns: GridColDef[] = [
+  const finance_grid_columns: GridColDef[] = [
     {
       field: 'id',
-      headerName: '年齢',
+      headerName: '入力者年齢',
       width: 90,
       type: 'number',
       editable: true,
@@ -82,6 +93,90 @@ export const App = () => {
       editable: true,
     }
   ];
+  
+  /**
+   * グリッドの列定義
+   */
+  const children_grid_columns: GridColDef[] = [
+    {
+      field: 'id',
+      headerName: '名前',
+      width: 90,
+      type: 'number',
+      editable: true,
+    },
+    {
+      field: 'age',
+      headerName: '年齢',
+      width: 90,
+      type: 'number',
+      editable: true,
+    },
+    {
+      field: 'KindergartenFee',
+      headerName: '保育園学費',
+      width: 120,
+      type: 'number',
+      editable: true,
+    },
+    {
+      field: 'PreschoolFee',
+      headerName: '幼稚園学費',
+      width: 120,
+      type: 'number',
+      editable: true,
+    },
+    {
+      field: 'ElementarySchoolFee',
+      headerName: '小学校学費',
+      width: 120,
+      type: 'number',
+      editable: true,
+    },
+    {
+      field: 'JuniorHighSchoolFee',
+      headerName: '中学校学費',
+      width: 120,
+      type: 'number',
+      editable: true,
+    },
+    {
+      field: 'HighSchoolFee',
+      headerName: '高校学費',
+      width: 120,
+      type: 'number',
+      editable: true,
+    },
+    {
+      field: 'UniversityFee',
+      headerName: '大学学費',
+      width: 120,
+      type: 'number',
+      editable: true,
+    },
+    {
+      field: 'GraduateSchoolFee',
+      headerName: '大学院学費',
+      width: 120,
+      type: 'number',
+      editable: true,
+    },
+    {
+      field: 'TutoringFee',
+      headerName: '塾代',
+      width: 120,
+      type: 'number',
+      editable: true,
+    },
+    {
+      field: 'OtherLearningExpense',
+      headerName: 'その他学習費',
+      width: 120,
+      type: 'number',
+      editable: true,
+    },
+];
+
 
   /**
      * データ表示設定
@@ -170,7 +265,7 @@ export const App = () => {
         <DataGrid
           rows={data}
           rowHeight={25}
-          columns={columns}
+          columns={finance_grid_columns}
           pageSize={50}
           rowsPerPageOptions={[10, 25, 50, 100]}
           disableSelectionOnClick
@@ -198,37 +293,54 @@ export const App = () => {
               </div>
             </Grid>
             <Grid item xs={3} px={1}>
+              <p>配偶者</p>
               <div>
-                <p>配偶者</p>
-                <div>
-                  <TextField fullWidth label="年齢" type="number" />
-                </div>
-                <div>
-                  <TextField fullWidth label="職業" />
-                </div>
-                <div>
-                  <TextField fullWidth label="手取り" type="number" />
-                </div>
-                <div>
-                  <TextField fullWidth label="貯蓄額" type="number" />
-                </div>
+                <TextField fullWidth label="年齢" type="number" name="age" onChange={handleSettingsChange} />
+              </div>
+              <div>
+                <TextField fullWidth label="手取り" type="number" name="annual_income" onChange={handleSettingsChange} />
+              </div>
+              <div>
+                <TextField fullWidth label="貯蓄額" type="number" name="savings" onChange={handleSettingsChange} />
+              </div>
+            </Grid>
+            <Grid item xs={3} px={1}>
+              <p>金融資産</p>
+              <div>
+                <TextField fullWidth label="資産額" type="number" name="financial_assets" onChange={handleSettingsChange} />
+              </div>
+              <div>
+                <TextField fullWidth label="利回り" type="number" InputProps={{ inputProps: { min: 0, max: 100 } }} name="investment_yield" onChange={handleSettingsChange} />
+              </div>
+              <div>
+                <TextField fullWidth label="確定拠出金積立額" type="number" name="defined_contribution_pension" onChange={handleSettingsChange} />
               </div>
             </Grid>
             <Grid item xs={3} px={1}>
               <div>
                 <p>子供</p>
-                <div>
-                  <FormControl>
-                    <FormLabel>子供有無</FormLabel>
-                    <RadioGroup defaultValue="false">
-                      <FormControlLabel value="true" control={<Radio />} label="有" />
-                      <FormControlLabel value="false" control={<Radio />} label="無" />
-                    </RadioGroup>
-                  </FormControl>
-                </div>
-                <div>
-                  <TextField fullWidth label="第一子年齢" type="number" />
-                </div>
+                < Box sx={{ height: 200, width: '100%' }}>
+                  <DataGrid
+                    rows={data}
+                    rowHeight={25}
+                    columns={children_grid_columns}
+                    pageSize={50}
+                    rowsPerPageOptions={[10, 25, 50, 100]}
+                    disableSelectionOnClick
+                    processRowUpdate={processRowUpdate}
+                    // onProcessRowUpdateError={handleProcessRowUpdateError}
+                    experimentalFeatures={{ newEditingApi: true }}
+                  />
+                </Box>
+              </div>
+            </Grid>
+            <Grid item xs={3} px={1}>
+              <p>定期支出</p>
+              <div>
+                <TextField fullWidth label="家賃" type="number" />
+              </div>
+              <div>
+                <TextField fullWidth label="ローン" type="number" />
               </div>
             </Grid>
             <Grid item xs={3} px={1}>
