@@ -25,7 +25,6 @@ interface Settings {
   savings: number
 }
 
-
 /**
  * 設定からデータを生成する
  * @param settings 
@@ -40,25 +39,52 @@ export const generateDataBySettings = (settings: Settings): GridValidRowModel[] 
       id: i,
       annual_income: settings.annual_income,
       annual_expenditure: settings.annual_expenditure,
+      earnings: settings.annual_income - settings.annual_expenditure,
       savings: tmp_savings
     })
   }
-  console.log(result)
   return result
 }
 
+const sampleData = [
+  {
+    id: 0,
+    name: '',
+    frequency: 1,
+    amount: 100,
+  },
+  {
+    id: 1,
+    name: '国内旅行',
+    frequency: 1,
+    amount: 100,
+  },
+  {
+    id: 2,
+    name: '海外旅行',
+    frequency: 1,
+    amount: 100,
+  },
+  {
+    id: 3,
+    name: '帰省',
+    frequency: 1,
+    amount: 100,
+  }
+]
+
 export const App = () => {
 
-//   収入（income）
-// 支出（expenditures）
-// 貯蓄（savings）
-// 資産（assets）
-// 負債（liabilities）
-// ネットワース（net worth）
-// 投資収益（investment returns）
-// 税金（taxes）
-// 社会保障（Social Security）
-// ペンション（pension）
+  //   収入（income）
+  // 支出（expenditures）
+  // 貯蓄（savings）
+  // 資産（assets）
+  // 負債（liabilities）
+  // ネットワース（net worth）
+  // 投資収益（investment returns）
+  // 税金（taxes）
+  // 社会保障（Social Security）
+  // ペンション（pension）
 
   /**
    * グリッドの列定義
@@ -69,7 +95,6 @@ export const App = () => {
       headerName: '入力者年齢',
       width: 90,
       type: 'number',
-      editable: true,
     },
     {
       field: 'annual_income',
@@ -86,6 +111,13 @@ export const App = () => {
       editable: true,
     },
     {
+      field: 'earnings',
+      headerName: '収支',
+      type: 'number',
+      width: 150,
+      editable: true,
+    },
+    {
       field: 'savings',
       headerName: '貯蓄',
       type: 'number',
@@ -93,7 +125,40 @@ export const App = () => {
       editable: true,
     }
   ];
-  
+
+  /**
+   * グリッドの列定義
+   */
+  const regular_expenditure_grid_columns: GridColDef[] = [
+    {
+      field: 'id',
+      headerName: 'No',
+      width: 90,
+      type: 'number',
+    },
+    {
+      field: 'name',
+      headerName: '名称',
+      type: 'number',
+      width: 150,
+      editable: true,
+    },
+    {
+      field: 'frequency',
+      headerName: '頻度',
+      type: 'number',
+      width: 150,
+      editable: true,
+    },
+    {
+      field: 'amount',
+      headerName: '金額',
+      type: 'number',
+      width: 150,
+      editable: true,
+    }
+  ];
+
   /**
    * グリッドの列定義
    */
@@ -175,17 +240,17 @@ export const App = () => {
       type: 'number',
       editable: true,
     },
-];
+  ];
 
 
   /**
      * データ表示設定
      */
   const [settings, setSettings] = useState<Settings>({
-    age: 0,
-    annual_income: 0,
-    annual_expenditure: 0,
-    savings: 0
+    age: 25,
+    annual_income: 3000000,
+    annual_expenditure: 2000000,
+    savings: 1000000
   })
 
   /**
@@ -280,7 +345,7 @@ export const App = () => {
       <Box>
         <form noValidate autoComplete="off">
           <Grid container>
-            <Grid item xs={3} px={1}>
+            <Grid item xs={2} px={1}>
               <p>入力者</p>
               <div>
                 <TextField fullWidth label="年齢" type="number" name="age" onChange={handleSettingsChange} />
@@ -292,7 +357,7 @@ export const App = () => {
                 <TextField fullWidth label="貯蓄額" type="number" name="savings" onChange={handleSettingsChange} />
               </div>
             </Grid>
-            <Grid item xs={3} px={1}>
+            <Grid item xs={2} px={1}>
               <p>配偶者</p>
               <div>
                 <TextField fullWidth label="年齢" type="number" name="age" onChange={handleSettingsChange} />
@@ -304,22 +369,70 @@ export const App = () => {
                 <TextField fullWidth label="貯蓄額" type="number" name="savings" onChange={handleSettingsChange} />
               </div>
             </Grid>
-            <Grid item xs={3} px={1}>
+            <Grid item xs={2} px={1}>
               <p>金融資産</p>
               <div>
-                <TextField fullWidth label="資産額" type="number" name="financial_assets" onChange={handleSettingsChange} />
+                <TextField fullWidth label="年間積立額" type="number" InputProps={{ inputProps: { min: 0, max: 100 } }} name="investment_yield" onChange={handleSettingsChange} />
               </div>
               <div>
                 <TextField fullWidth label="利回り" type="number" InputProps={{ inputProps: { min: 0, max: 100 } }} name="investment_yield" onChange={handleSettingsChange} />
               </div>
+            </Grid>
+            <Grid item xs={2} px={1}>
+              <p>NISA</p>
               <div>
-                <TextField fullWidth label="確定拠出金積立額" type="number" name="defined_contribution_pension" onChange={handleSettingsChange} />
+                <TextField fullWidth label="NISA" type="number" InputProps={{ inputProps: { min: 0, max: 100 } }} name="investment_yield" onChange={handleSettingsChange} />
+              </div>
+              <div>
+                <TextField fullWidth label="NISA利回り" type="number" InputProps={{ inputProps: { min: 0, max: 100 } }} name="investment_yield" onChange={handleSettingsChange} />
               </div>
             </Grid>
-            <Grid item xs={3} px={1}>
+            <Grid item xs={2} px={1}>
+              <p>iDeco</p>
+              <div>
+                <TextField fullWidth label="iDeco積立額" type="number" name="defined_contribution_pension" onChange={handleSettingsChange} />
+              </div>
+              <div>
+                <TextField fullWidth label="iDeco利回り" type="number" InputProps={{ inputProps: { min: 0, max: 100 } }} name="investment_yield" onChange={handleSettingsChange} />
+              </div>
+            </Grid>
+            <Grid item xs={2} px={1}>
+              <p>住宅</p>
+              <div>
+                <TextField fullWidth label="家賃" type="number" />
+              </div>
+              <div>
+                <TextField fullWidth label="ローン" type="number" />
+              </div>
+            </Grid>
+            <Grid item xs={10} px={1}>
+              <p>定期支出</p>
+              < Box sx={{ height: 300, width: '100%' }}>
+                <DataGrid
+                  rows={sampleData}
+                  rowHeight={25}
+                  columns={regular_expenditure_grid_columns}
+                  pageSize={50}
+                  rowsPerPageOptions={[10, 25, 50, 100]}
+                  disableSelectionOnClick
+                  processRowUpdate={processRowUpdate}
+                  // onProcessRowUpdateError={handleProcessRowUpdateError}
+                  experimentalFeatures={{ newEditingApi: true }}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={2} px={1}>
+              <div>
+                <p>セカンドライフ</p>
+                <div>
+                  <TextField fullWidth label="退職金" type="number" />
+                </div>
+              </div>
+            </Grid>
+            <Grid item xs={12} px={1}>
               <div>
                 <p>子供</p>
-                < Box sx={{ height: 200, width: '100%' }}>
+                < Box sx={{ height: 300, width: '100%' }}>
                   <DataGrid
                     rows={data}
                     rowHeight={25}
@@ -332,69 +445,6 @@ export const App = () => {
                     experimentalFeatures={{ newEditingApi: true }}
                   />
                 </Box>
-              </div>
-            </Grid>
-            <Grid item xs={3} px={1}>
-              <p>定期支出</p>
-              <div>
-                <TextField fullWidth label="家賃" type="number" />
-              </div>
-              <div>
-                <TextField fullWidth label="ローン" type="number" />
-              </div>
-            </Grid>
-            <Grid item xs={3} px={1}>
-              <div>
-                <p>住宅</p>
-                <ul>
-                  <div>
-                    <FormControl>
-                      <FormLabel>住宅形態</FormLabel>
-                      <RadioGroup defaultValue="false">
-                        <FormControlLabel value="own_house" control={<Radio />} label="持ち家" />
-                        <FormControlLabel value="rental" control={<Radio />} label="賃貸" />
-                      </RadioGroup>
-                    </FormControl>
-                  </div>
-                  <div>
-                    <TextField fullWidth label="家賃" type="number" />
-                  </div>
-                  <div>
-                    <FormControl>
-                      <FormLabel>マイホーム購入</FormLabel>
-                      <RadioGroup defaultValue="false">
-                        <FormControlLabel value="true" control={<Radio />} label="購入予定" />
-                        <FormControlLabel value="false" control={<Radio />} label="購入しない" />
-                      </RadioGroup>
-                    </FormControl>
-                  </div>
-                  <TextField fullWidth label="購入するのはn年後" type="number" />
-                </ul>
-              </div>
-            </Grid>
-            <Grid item xs={3} px={1}>
-              <div>
-                <p>セカンドライフ</p>
-                <div>
-                  <TextField fullWidth label="退職金" type="number" />
-                </div>
-              </div>
-            </Grid>
-            <Grid item xs={3} px={1}>
-              <div>
-                <p>ライフイベント</p>
-                <div>
-                  <TextField fullWidth label="年間支出" name="annual_expenditure" type="number" onChange={handleSettingsChange} />
-                </div>
-                <ul>
-                  <li>車購入</li>
-                  <li>家のリフォーム</li>
-                  <li>国内旅行</li>
-                  <li>海外旅行</li>
-                  <li>ペット</li>
-                  <li>介護</li>
-                  <li>趣味</li>
-                </ul>
               </div>
             </Grid>
           </Grid>
